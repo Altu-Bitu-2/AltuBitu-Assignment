@@ -5,9 +5,6 @@
 using namespace std;
 
 const int DAY = 86400;
-int timeToSecond(int h, int m, int s) {
-	return h * 3600 + m * 60 + s;
-}
 
 tuple<int, int, int> secondToTime(int sec) {
 	return make_tuple(sec / 3600, sec / 60 % 60, sec % 60);
@@ -18,7 +15,7 @@ int main() {
 
 	int h, m, s, q, t, c;
 	cin >> h >> m >> s >> q;
-	int cur_sec = timeToSecond(h, m, s);
+	int cur_sec = h * 3600 + m * 60 + s;
 	while (q--) {
 		cin >> t;
 		switch (t) {
