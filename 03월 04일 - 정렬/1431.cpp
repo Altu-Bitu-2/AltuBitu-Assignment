@@ -1,26 +1,25 @@
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 using namespace std;
 
+int addNumber(string s) {
+	int sum = 0;
+	for (int i = 0; i < s.length(); i++)
+		if (isdigit(s[i])) sum += (s[i] - '0');
+	return sum;
+}
 bool cmp(string s1, string s2) {
 	if (s1.length() != s2.length())
 		return s1.length() < s2.length();
 
-	int sum_a = 0, sum_b = 0;
-
-	for (int i = 0; i < s1.length(); i++)
-		if (s1[i] >= '0' && s1[i] <= '9')
-			sum_a += (s1[i] - '0');
-
-	for (int i = 0; i < s2.length(); i++) 
-		if (s2[i] >= '0' && s2[i] <= '9')
-			sum_b += (s2[i] - '0');
-		
+	int sum_a = addNumber(s1);
+	int sum_b = addNumber(s2);
+	
 	if (sum_a != sum_b)
 		return sum_a < sum_b;
 
 	return s1 < s2;
-	
 }
 int main() {
 

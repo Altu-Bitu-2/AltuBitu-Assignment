@@ -16,7 +16,7 @@ int main() {
 	long long sum = 0;
 	for (int i = 0; i < n; i++) {
 		int tmp = tip[i] - i;
-		if (tmp < 0) continue;
+		if (tmp <= 0) break;
 		sum += tmp;
 	}
 

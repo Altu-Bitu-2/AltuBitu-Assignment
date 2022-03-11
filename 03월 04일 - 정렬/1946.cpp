@@ -2,9 +2,7 @@
 #include <vector>
 #include <algorithm>
 using namespace std;
-bool cmp(pair<int, int> p1, pair<int, int> p2) {
-	return p1.first < p2.first;
-}
+
 int main() {
 
 	ios::sync_with_stdio(false);
@@ -21,13 +19,13 @@ int main() {
 			cin >> a >> b;
 			v.push_back(make_pair(a, b));
 		}
-		sort(v.begin(), v.end(), cmp);
+		sort(v.begin(), v.end());
 		int cnt = 1; // 첫 번째 한 명 무조건 합격
-		int min_num = v[0].second;
+		int highest_rank = v[0].second;
 		for (int i = 1; i < n; i++)
-			if (v[i].second < min_num) {
+			if (v[i].second < highest_rank) {
 				cnt++;
-				min_num = v[i].second;
+				highest_rank = v[i].second;
 			}
 		cout << cnt << "\n";
 	}
