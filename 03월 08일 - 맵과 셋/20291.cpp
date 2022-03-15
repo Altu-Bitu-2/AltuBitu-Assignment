@@ -6,17 +6,6 @@
 
 using namespace std;
 
-vector <string> split(string str, char delimiter) {
-	istringstream iss(str); 
-	string buffer; 
-
-	vector<string> result;
-
-	while (getline(iss, buffer, delimiter))
-		result.push_back(buffer);
-
-	return result;
-}
 int main() {
 	ios::sync_with_stdio(false);
 	cin.tie(0); cout.tie(0);
@@ -29,12 +18,12 @@ int main() {
 
 	while (n--) {
 		cin >> s;
-		vector<string> result = split(s, '.');
-		m[result[1]]++;
+		int loc = s.find('.');
+		string result = s.substr(loc + 1);
+		m[result]++;
 	}
 
 	for (auto i = m.begin(); i != m.end(); i++)
 		cout << i->first << " " << i->second << "\n";
-        
 	return 0;
 }
