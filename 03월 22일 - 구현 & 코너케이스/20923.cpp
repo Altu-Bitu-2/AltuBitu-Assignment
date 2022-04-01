@@ -1,83 +1,80 @@
 #include <iostream>
+#include <vector>
 #include <deque>
+
 using namespace std;
 
-deque <int> dodo_deque, suyeon_deque, dodo_ground, suyeon_ground;
-
-void isCard5() {
-	if ((!suyeon_ground.empty() && suyeon_ground.front() == 5) || (!dodo_ground.empty() && dodo_ground.front() == 5)) {
-		while (!suyeon_ground.empty()) {
-			dodo_deque.push_back(suyeon_ground.back());
-			suyeon_ground.pop_back();
-		}
-		while (!dodo_ground.empty()) {
-			dodo_deque.push_back(dodo_ground.back());
-			dodo_ground.pop_back();
-		}
-		//cout << "2) dodo deque: " << dodo_deque.size() << "\n";
-		//cout << "2) suyeon deque: " << suyeon_deque.size() << "\n";
-	}
+//그라운드에 있는 모든 카드를 덱으로 옮기는 함수
+void moveCard(deque<int> &deck, deque<int> &ground) {
+    while (!ground.empty()) { // 그라운드에 남은 카드가 없을 때까지 반복
+        deck.push_back(ground.back()); // 그라운드의 뒤에 있는 카드를 덱으로 이동
+        ground.pop_back(); // 그라운드 뒤에 있는 카드 하나 pop함
+    }
 }
 
-void isCardSum5() {
-	if (!suyeon_ground.empty() && !dodo_ground.empty() && (dodo_ground.front() + suyeon_ground.front() == 5)) { // 수연 종 침
-		while (!dodo_ground.empty()) {
-			suyeon_deque.push_back(dodo_ground.back());
-			dodo_ground.pop_back();
-		}
-		while (!suyeon_ground.empty()) {
-			suyeon_deque.push_back(suyeon_ground.back());
-			suyeon_ground.pop_back();
-		}
-		//cout << "1) dodo deque: " << dodo_deque.size() << "\n";
-		//cout << "1) suyeon deque: " << suyeon_deque.size() << "\n";
-	}
+//게임을 진행하는 함수
+pair<int, int> playGame(int m, vector<deque<int>> &deck, vector<deque<int>> &ground) {
+    bool turn = false; //도도부터 시작
+
+    while (m--) {
+        //이번 턴의 사람이 카드 뒤집어서 그라운드에 올려놓기
+        int card = deck[turn].front();
+        ground[turn].push_front(card); // 그라운드 위에 카드 올려놓기
+        deck[turn].pop_front(); // 덱 위에 있는 카드 한 장 제거
+
+        if (deck[turn].empty()) { // 덱이 비어있다면 즉시 종료하기
+            break;
+        }
+
+        //이번에 종을 칠 사람
+        int bell = -1;
+        if (card == 5) { // 5 카드가 나온 경우
+            bell = 0; // 수연이가 종을 침 (0:수연, 1: 도도)
+        }
+        else if (!ground[0].empty() && !ground[1].empty() && (card + ground[!turn].front() == 5)) { 
+			// 둘 다 그라운드가 비어있지 않고 현재 뽑은 카드와 상대 그라운드에 나와 있는 카드의 합이 5인 경우 
+            bell = 1; // 도도가 종을 침
+        }
+
+        if (bell != -1) { // 도도나 수연이가 종을 친 경우
+            moveCard(deck[bell], ground[!bell]); // 상대의 그라운드에 있는 카드를 자신의 덱으로 옮기기
+            moveCard(deck[bell], ground[bell]); // 자신의 그라운드에 있는 카드를 자신의 덱으로 옮기기
+        }
+        turn = !turn; //차례 바꾸기
+    }
+    return make_pair(deck[0].size(), deck[1].size()); // 덱에 남아 있는 카드 개수 반환
 }
+
+/**
+ * [숫자 할리갈리 게임] - 시뮬레이션 문제
+ * - 카드 덱과 그라운드의 카드를 관리하기 위해 덱 사용
+ *
+ * 1. 차례가 되면, 상단 카드를 그라운드에 놓는다.
+ * 2. 누군가의 카드 덱이 비는 즉시 게임 종료
+ * 3. 종을 치면, 상대방의 그라운드 카드를 뒤집어서 카드 더미의 밑에 넣는다.
+ */
+
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
+    int n, m, num1, num2;
+    vector<deque<int>> deck(2), ground(2); // 플레이어가 2명이므로 덱 2개, 그라운드 2개 선언
 
-	int n, m, dodo, suyueon;
-	cin >> n >> m; // 카드 개수, 게임 진행 횟수
+    cin >> n >> m; // 도도 카드 개수, 수연 카드 개수
+    while (n--) {
+        cin >> num1 >> num2; // 도도 카드, 수연 카드 
+        deck[0].push_front(num1); // 도도 덱에 카드 넣기, 아래 위치한 카드부터 주어지므로 덱의 앞에서부터 넣기
+        deck[1].push_front(num2); // 수연 덱에 카드 넣기
+    }
 
-	for (int i = 0; i < n; i++) {
-		cin >> dodo >> suyueon;
-		dodo_deque.push_front(dodo);
-		suyeon_deque.push_front(suyueon);
-	}
+    pair<int, int> result = playGame(m, deck, ground); // 게임한 후, 남아 있는 덱의 사이즈 리턴하는 함수 
 
-	// 둘 중에 하나라도 비면 종료
-	for(int i =1 ; i <= m ; i++) {
-		int flag = 0;
-
-		// 도도 먼저 깜
-		if (!dodo_deque.empty()) { // 1장은 들어있어야 함
-			dodo = dodo_deque.front(); // 제일 위 카드 하나깜
-			dodo_deque.pop_front(); // 카드 한장씩 제거
-			dodo_ground.push_front(dodo); // 그라운드에 내려놓을 때 위로 올리기
-		}
-		if (dodo_deque.empty()) flag = 1;
-		if (flag == 1) break;
-		isCard5(); // 5 카드 있는지 검사
-		isCardSum5(); // 합이 5되는지 검사
-
-		// 수연이 깜
-		if (!suyeon_deque.empty()) {
-			suyueon = suyeon_deque.front(); // 수연 제일 위 카드
-			suyeon_deque.pop_front();
-			suyeon_ground.push_front(suyueon);
-		}
-		if (suyeon_deque.empty()) flag = 1;
-		if (flag == 1) break;
-		isCard5(); // 5 카드 있는지 검사
-		isCardSum5(); // 합이 5되는지 검사
-	}
-	
-	//cout << "dodo deque: " << dodo_deque.size() << "\n";
-	//cout << "suyeon deque: " << suyeon_deque.size() << "\n";
-	
-	if (dodo_deque.size() == suyeon_deque.size()) cout << "dosu\n";
-	else dodo_deque.size() > suyeon_deque.size() ? cout << "do\n" : cout << "su\n";
-
-	return 0;
+    if (result.first == result.second) { // 남아 있는 카드 수가 같다면 
+        cout << "dosu\n"; // 비김
+    }
+    else if (result.first > result.second) { // 남아 있는 도도 카드가 더 많다면 
+        cout << "do\n"; // 도도가 이김
+    }
+    else if (result.first < result.second) { // 남아 있는 수연 카드가 더 많다면 
+        cout << "su\n"; // 수연이가 이김
+    }
+    return 0;
 }
