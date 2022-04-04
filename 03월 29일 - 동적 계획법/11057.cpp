@@ -3,7 +3,7 @@
 using namespace std;
 
 const int MOD = 10007;
-int dp[1001][1001];
+int dp[1001][10];
 int main() {
 
 	int n, answer=0;
