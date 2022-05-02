@@ -19,11 +19,6 @@ int main() {
 		v.push_back(tmp);
 	}
 
-	if (n <= 2) {
-		cout << "0\n";
-		return 0;
-	}
-
 	sort(v.begin(), v.end());
 
 	for (int i = 0; i < n ; i++) { // i: 현재 검사할 수
